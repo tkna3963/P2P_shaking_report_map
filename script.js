@@ -28,10 +28,39 @@ function updateClock() {
     document.getElementById('clock').innerText = timeString;
 }
 
+function SUM(array) {
+    // reduce() メソッドを使用してリストの総和を計算する
+    var sum = array.reduce(function (accumulator, currentValue) {
+        return accumulator + currentValue;
+    }, 0);
+
+    return sum;
+}
+
 function getOrangeColor(value) {
     var hue = 30 + (value * 30) / 100; // 0〜100の範囲の数値を30〜60の範囲にマッピング
     return 'hsl(' + hue + ', 100%, 50%)'; // Saturation（彩度）は100%、Lightness（明度）は50%固定
 }
+
+function P2P_Locatedatas() {
+    const savedData = localStorage.getItem('siteListData');
+    if (savedData) {
+        return JSON.parse(savedData);
+    } else {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://tkna3963.github.io/P2P_shaking_report_map/import_folder/P2P_code_locate.json', false); // 同期的にリクエストを行う
+        xhr.send();
+        if (xhr.status === 200) {
+            const json_data = JSON.parse(xhr.responseText);
+            localStorage.setItem('siteListData', JSON.stringify(json_data));
+            return json_data;
+        } else {
+            console.error('Error loading settings:', xhr.status);
+            return null;
+        }
+    }
+}
+
 
 function P2P_9611() {
     const apiUrl = `https://api.p2pquake.net/v2/history?codes=9611&limit=1`;
@@ -44,22 +73,40 @@ function P2P_9611() {
         const count = P2P_9611_data[0].count;
         const started_at = P2P_9611_data[0].started_at;
         const updated_at = P2P_9611_data[0].updated_at;
-        const confidence=P2P_9611_data[0].confidence;
+        const confidence = P2P_9611_data[0].confidence;
         if (typeof P2P_9611_data[0].area_confidences !== 'undefined' && P2P_9611_data[0].area_confidences !== null) {
-            return { "time": time, "count": count, "started_at": started_at, "updated_at": updated_at,"confidence":confidence,"teleglam":P2P_9611_data};
-        }else{
-            const area_confidences=P2P_9611_data[0].area_confidences;
-            return { "time": time, "count": count, "started_at": started_at, "updated_at": updated_at,"confidence":confidence,"area_confidences":area_confidences,"teleglam":P2P_9611_data};
+            return { "time": time, "count": count, "started_at": started_at, "updated_at": updated_at, "confidence": confidence, "teleglam": P2P_9611_data };
+        } else {
+            const area_confidences = P2P_9611_data[0].area_confidences;
+            return { "time": time, "count": count, "started_at": started_at, "updated_at": updated_at, "confidence": confidence, "area_confidences": area_confidences, "teleglam": P2P_9611_data };
         }
     }
 }
 
-function P2P_555(){
+function P2P_555() {
     const apiUrl = `https://api.p2pquake.net/v2/history?codes=555&limit=1`;
     const xhr = new XMLHttpRequest();
     xhr.open("GET", apiUrl, false);
     xhr.send();
     if (xhr.readyState === 4 && xhr.status === 200) {
         const P2P_555_data = JSON.parse(xhr.responseText);
-    }   
+        const time = P2P_555_data[0].time;
+        const created_at = P2P_555_data[0].created_at;
+        const areas = P2P_555_data[0].areas;
+        return { "time": time, "created_at": created_at, "areas": areas }
+    }
+}
+
+function P2P_555_count() {
+    const ID_list = [];
+    const Peer_list = [];
+    const P2P_555_list = P2P_555();
+    P2P_555_list["areas"].forEach(function (area) {
+        ID_list.push(area.id);
+    });
+    P2P_555_list["areas"].forEach(function (area) {
+        Peer_list.push(area.peer);
+    });
+    const Peer_SUM = SUM(Peer_list)
+    return {"ID_list":ID_list,"Peer_list":Peer_list,"Peer_SUM":Peer_SUM}
 }
