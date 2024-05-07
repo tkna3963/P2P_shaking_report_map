@@ -1,6 +1,76 @@
 <!DOCTYPE html>
 <html>
- <script>
-  alert("test")
- </script>
+
+<head>
+    <title>P2P_shaking_report_map BY TKYT612314</title>
+    <base target="_top">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <div id="Main"></div>
+    <div id="map"></div>
+    <div id="timestamp">現在時刻: <span id="clock"></span></div>
+    <script src="script.js"></script>
+    <script>
+        function updateData() {
+            console.log(P2P_9611())
+
+            var map = L.map('map').setView([35.682839, 139.759455], 6); // 日本の中心座標
+            L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=IkxKT1ZrEb6IprnTOsui', {
+                attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors'
+            }).addTo(map);
+
+            var prefectureColorMap = {
+                "東京都": "#ff0000", // 東京都を赤色に指定
+                "神奈川県": "#00ff00", // 神奈川県を緑色に指定
+                "新潟県":"red",
+                "石川県":getOrangeColor(12),
+                "北海道":"red"
+            };
+
+            // GeoJSONデータを読み込む
+            fetch('https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    // 指定された各都道府県のGeoJSONデータに色を適用
+                    data.features.forEach(feature => {
+                        var prefectureName = feature.properties.nam_ja;
+                        if (prefectureColorMap[prefectureName]) {
+                            feature.properties.fillColor = prefectureColorMap[prefectureName];
+                        }
+                    });
+
+                    // GeoJSONデータを地図に追加し、各都道府県ごとに指定した色で塗りつぶす
+                    L.geoJSON(data, {
+                        style: function (feature) {
+                            return {
+                                fillColor: feature.properties.fillColor || '#cccccc', // デフォルトの色
+                                fillOpacity: 0.5,
+                                color: '#000', 
+                                weight: 1
+                            };
+                        }
+                    }).addTo(map);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            function updateClock() {
+                var now = new Date();
+                var clockElement = document.getElementById('clock');
+                clockElement.textContent = now.toLocaleTimeString();
+            }
+
+            updateData();
+            updateClock();
+            setInterval(updateData, 10000); // 10秒ごとにデータを更新する
+            setInterval(updateClock, 1000); // 1秒ごとに時計を更新する
+    </script>
+</body>
+
 </html>

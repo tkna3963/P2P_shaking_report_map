@@ -1,0 +1,27 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+#map {
+    height:100%;
+    width: 100%;
+    z-index: 0;
+    /* マップのスタッキング順序を設定 */
+}
+
+#timestamp {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: white;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    z-index: 1;
+    /* 時刻バーのスタッキング順序を設定 */
+}
