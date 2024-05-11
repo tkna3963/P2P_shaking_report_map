@@ -65,7 +65,7 @@ function SUM(array) {
 }
 
 function getOrangeColor(value) {
-    var hue =(value * 30); // 0〜100の範囲の数値を30〜60の範囲にマッピング
+    var hue =(value * 10)+50; // 0〜100の範囲の数値を30〜60の範囲にマッピング
     return 'hsl(' + hue + ', 100%, 50%)'; // Saturation（彩度）は100%、Lightness（明度）は50%固定
 }
 
@@ -191,9 +191,6 @@ function pref_name_renamer(data) {
     );
 }
 
-
-
-
 function colorizeNumbers(data) {
     const result = {};
 
@@ -217,8 +214,6 @@ function P2P_555_count() {
     const areas_info_list=combineListsIntoObjects(Peer_list,area_list);
     const pref_report_count=pref_name_renamer(calculateTotalPeers(areas_info_list));
     const area_color=colorizeNumbers(pref_report_count) 
-    List_checker_for_debugging(area_color,"jｑ")
-
     const Peer_SUM = SUM(Peer_list)
     return {"ID_list":ID_list,"Peer_list":Peer_list,"Peer_SUM":Peer_SUM,"Each_prefecture_Number_of_peers":area_color}
 }

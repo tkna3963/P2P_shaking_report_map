@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -17,8 +16,8 @@
     <script>
         var map = L.map('map').setView([35.682839, 139.759455], 6); // 日本の中心座標
         L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=IkxKT1ZrEb6IprnTOsui', {
-            attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors'
-        }).addTo(map);
+                attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors'
+            }).addTo(map);
         let P2P_555_count_data=P2P_555_count();
         function updateData() {
             var prefectureColorMap =P2P_555_count_data["Each_prefecture_Number_of_peers"]
@@ -40,7 +39,6 @@
                         style: function (feature) {
                             return {
                                 fillColor: feature.properties.fillColor || '#cccccc', // デフォルトの色
-                                fillOpacity: 0.5,
                                 color: '#000',
                                 weight: 1
                             };
@@ -53,15 +51,16 @@
         }
 
         function updateClock() {
+            console.log(P2P_9611())
             var now = new Date().toLocaleTimeString();
-            var text_label_text = `現在時刻:${now} 全国Peer合計:${P2P_555_count_data["Peer_SUM"]}`
+            var text_label_text = `現在時刻:${now} 報告件数:${P2P_9611()["count"]} 全国Peer接続合計:${P2P_555_count_data["Peer_SUM"]}`
             var clockElement = document.getElementById('clock');
             clockElement.textContent = text_label_text;
         }
 
         updateData();
         updateClock();
-        setInterval(updateData, 10000); // 10秒ごとにデータを更新する
+        setInterval(updateData, 1000); // 10秒ごとにデータを更新する
         setInterval(updateClock, 1000); // 1秒ごとに時計を更新する
     </script>
 </body>
