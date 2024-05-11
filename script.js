@@ -1,3 +1,17 @@
+function now_time() {
+    currentDateTime = new Date();
+    return currentDateTime
+}
+
+function formaTimeDate(dateString, timeZone = 'Asia/Tokyo') {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: timeZone };
+    const date = new Date(dateString);
+    const formatter = new Intl.DateTimeFormat('ja-JP', options);
+    const formattedDate = formatter.format(date);
+    const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
+    return formattedDate.replace(/\//g, '年').replace(' ', `日(${dayOfWeek}曜日) `).replace(':', '時').replace(':', '分') + '秒';
+}
+
 function Print_checker_for_debugging(data, name) {
     console.log(data, name)
 }

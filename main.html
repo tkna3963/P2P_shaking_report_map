@@ -14,7 +14,7 @@
     <div id="timestamp"><span id="clock"></span></div>
     <script src="script.js"></script>
     <script>
-        var map = L.map('map').setView([35.682839, 139.759455], 6); // 日本の中心座標
+        var map = L.map('map').setView([35.682839, 139.759455], 5); // 日本の中心座標
         L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=IkxKT1ZrEb6IprnTOsui', {
                 attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors'
             }).addTo(map);
@@ -51,8 +51,7 @@
         }
 
         function updateClock() {
-            console.log(P2P_9611())
-            var now = new Date().toLocaleTimeString();
+            var now =formaTimeDate(now_time())
             var text_label_text = `現在時刻:${now} 報告件数:${P2P_9611()["count"]} 全国Peer接続合計:${P2P_555_count_data["Peer_SUM"]}`
             var clockElement = document.getElementById('clock');
             clockElement.textContent = text_label_text;
