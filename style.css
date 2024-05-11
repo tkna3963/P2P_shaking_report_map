@@ -25,3 +25,44 @@ html {
     z-index: 1;
     /* 時刻バーのスタッキング順序を設定 */
 }
+
+#koisi_image {
+    position: fixed;
+    bottom: 0;
+    right: 0px;
+    height: 550px;
+    width: auto;
+    pointer-events: none;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -moz-touch-callout:none;
+    -moz-user-select:none;
+    user-select:none;
+    z-index: 1;
+}
+
+#koisistamp {
+    position: absolute;
+    top: 0px;
+    right:0px;
+    width: 320px;
+    height: 120px;
+    background-color: rgb(16, 198, 88);
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+#triangle {
+    position: absolute;
+    width: 0;
+    height: 0;
+    right: 140px;
+    top: 130px;
+    border-top: 20px solid #000; /* Downward triangle */
+    border-right: 20px solid transparent; /* Leftward triangle */
+    border-left: 20px solid transparent; /* Rightward triangle */
+    border-bottom: 20px solid transparent; /* Upward triangle */
+    z-index: 1; /* Ensure the triangle appears beneath the text box */
+}
