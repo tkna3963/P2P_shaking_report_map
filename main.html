@@ -12,22 +12,16 @@
 <body>
     <div id="Main"></div>
     <div id="map"></div>
-    <div id="timestamp">現在時刻: <span id="clock"></span></div>
+    <div id="timestamp"><span id="clock"></span></div>
     <script src="script.js"></script>
     <script>
+        var map = L.map('map').setView([35.682839, 139.759455], 6); // 日本の中心座標
+        L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=IkxKT1ZrEb6IprnTOsui', {
+            attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors'
+        }).addTo(map);
+        let P2P_555_count_data=P2P_555_count();
         function updateData() {
-            var map = L.map('map').setView([35.682839, 139.759455], 6); // 日本の中心座標
-            L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=IkxKT1ZrEb6IprnTOsui', {
-                attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors'
-            }).addTo(map);
-
-            var prefectureColorMap = {
-                "東京都": "#ff0000", // 東京都を赤色に指定
-                "神奈川県": "#00ff00", // 神奈川県を緑色に指定
-                "新潟県":"red",
-                "石川県":getOrangeColor(12),
-                "北海道":"red"
-            };
+            var prefectureColorMap =P2P_555_count_data["Each_prefecture_Number_of_peers"]
 
             // GeoJSONデータを読み込む
             fetch('https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson')
@@ -47,7 +41,7 @@
                             return {
                                 fillColor: feature.properties.fillColor || '#cccccc', // デフォルトの色
                                 fillOpacity: 0.5,
-                                color: '#000', 
+                                color: '#000',
                                 weight: 1
                             };
                         }
@@ -56,19 +50,19 @@
                 .catch(error => {
                     console.error('Error:', error);
                 });
-            }
+        }
 
-            function updateClock() {
-                var now = new Date().toLocaleTimeString();
-                var text_label_text=`現在時刻:${now} 全国Peer合計:${P2P_555_count()["Peer_SUM"]}`
-                var clockElement = document.getElementById('clock');
-                clockElement.textContent = text_label_text;
-            }
+        function updateClock() {
+            var now = new Date().toLocaleTimeString();
+            var text_label_text = `現在時刻:${now} 全国Peer合計:${P2P_555_count_data["Peer_SUM"]}`
+            var clockElement = document.getElementById('clock');
+            clockElement.textContent = text_label_text;
+        }
 
-            updateData();
-            updateClock();
-            setInterval(updateData, 10000); // 10秒ごとにデータを更新する
-            setInterval(updateClock, 1000); // 1秒ごとに時計を更新する
+        updateData();
+        updateClock();
+        setInterval(updateData, 10000); // 10秒ごとにデータを更新する
+        setInterval(updateClock, 1000); // 1秒ごとに時計を更新する
     </script>
 </body>
 
