@@ -1,6 +1,8 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 
 <head>
+    <meta charset="UTF-8">
     <title>P2P_shaking_report_map BY TKYT612314</title>
     <base target="_top">
     <link rel="stylesheet" href="style.css">
@@ -18,49 +20,90 @@
         L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=IkxKT1ZrEb6IprnTOsui', {
             attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> contributors'
         }).addTo(map);
-        let P2P_555_count_data = P2P_555_count();
-        function updateData() {
-            var prefectureColorMap = P2P_555_count_data["Each_prefecture_Number_of_peers"]
 
-            // GeoJSONデータを読み込む
-            fetch('https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson')
-                .then(response => response.json())
-                .then(data => {
-                    // 指定された各都道府県のGeoJSONデータに色を適用
-                    data.features.forEach(feature => {
-                        var prefectureName = feature.properties.nam_ja;
-                        if (prefectureColorMap[prefectureName]) {
-                            feature.properties.fillColor = prefectureColorMap[prefectureName];
-                        }
-                    });
+        function P2P_Locatedatas() {
+            const savedData = localStorage.getItem('P2P_locates_data');
+            if (savedData) {
+                return JSON.parse(savedData);
+            } else {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', 'https://tkna3963.github.io/P2P_shaking_report_map/import_folder/P2P_code_locate.json', false); // 同期的にリクエストを行う
+                xhr.send();
+                if (xhr.status === 200) {
+                    const json_data = JSON.parse(xhr.responseText);
+                    localStorage.setItem('P2P_locates_data', JSON.stringify(json_data));
+                    return json_data;
+                } else {
+                    console.error('Error loading settings:', xhr.status);
+                    return null;
+                }
+            }
+        }
 
-                    // GeoJSONデータを地図に追加し、各都道府県ごとに指定した色で塗りつぶす
-                    L.geoJSON(data, {
-                        style: function (feature) {
-                            return {
-                                fillColor: feature.properties.fillColor || '#cccccc', // デフォルトの色
-                                color: '#000',
-                                weight: 1
-                            };
-                        }
-                    }).addTo(map);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+        function fetchGeoJSONData() {
+            const savedGeoJSON = localStorage.getItem('japan_geojson_data');
+            if (savedGeoJSON) {
+                return JSON.parse(savedGeoJSON);
+            } else {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', 'https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson', false); // Synchronous request
+                xhr.send();
+                if (xhr.status === 200) {
+                    const geoJSONData = JSON.parse(xhr.responseText);
+                    localStorage.setItem('japan_geojson_data', JSON.stringify(geoJSONData));
+                    return geoJSONData;
+                } else {
+                    console.error('Error loading GeoJSON data:', xhr.status);
+                    return null;
+                }
+            }
+        }
+
+        function applyColorsToPrefectures(geoJSONData, prefectureColorMap) {
+            if (geoJSONData && geoJSONData.features) {
+                geoJSONData.features.forEach(feature => {
+                    const prefectureName = feature.properties.nam_ja;
+                    if (prefectureColorMap[prefectureName]) {
+                        feature.properties.fillColor = prefectureColorMap[prefectureName];
+                    }
                 });
+            }
+        }
+
+        let P2P_555_count_data = P2P_555_count();
+
+        function updateData() {
+            var prefectureColorMap = P2P_555_count_data["Each_prefecture_Number_of_peers"];
+
+            // Fetch GeoJSON data
+            const geoJSONData = fetchGeoJSONData();
+
+            // Apply colors to the prefectures
+            applyColorsToPrefectures(geoJSONData, prefectureColorMap);
+
+            // Add GeoJSON data to the map with the specified styles
+            L.geoJSON(geoJSONData, {
+                style: function (feature) {
+                    return {
+                        fillColor: feature.properties.fillColor || '#cccccc', // Default color
+                        color: '#000',
+                        weight: 1
+                    };
+                }
+            }).addTo(map);
         }
 
         function updateClock() {
-            var now = formaTimeDate(now_time())
-            var text_label_text = `現在時刻:${now} 報告件数:${P2P_9611()["count"]} 全国Peer接続合計:${P2P_555_count_data["Peer_SUM"]}`
+            var now = formaTimeDate(now_time());
+            var text_label_text = `現在時刻:${now} 報告件数:${P2P_9611()["count"]} 全国Peer接続合計:${P2P_555_count_data["Peer_SUM"]}`;
             var clockElement = document.getElementById('clock');
             clockElement.textContent = text_label_text;
         }
 
         updateData();
         updateClock();
-        setInterval(updateData, 1000); // 10秒ごとにデータを更新する
-        setInterval(updateClock, 1000); // 1秒ごとに時計を更新する
+        setInterval(updateData, 10000); // Update data every 10 seconds
+        setInterval(updateClock, 1000); // Update clock every second
     </script>
     <div id="koisistamp">古明地こいしだよ~~</div>
     <div id="triangle"></div>
